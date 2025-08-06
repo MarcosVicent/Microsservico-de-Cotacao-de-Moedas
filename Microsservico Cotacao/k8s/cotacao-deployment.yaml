@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cotacao-deployment
+  labels:
+    app: cotacao
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cotacao
+  template:
+    metadata:
+      labels:
+        app: cotacao
+    spec:
+      containers:
+        - name: cotacao-microsservico
+          image: [sua-imagem-docker-aqui]:[tag]
+          ports:
+            - containerPort: 8000
+          env:
+            - name: API_KEY_FINANCEIRA
+              valueFrom:
+                secretKeyRef:
+                  name: cotacao-secret
+                  key: api_key_financeira
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cotacao-config
+                  key: redis_host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cotacao-config
+                  key: redis_port
+            - name: CACHE_TTL_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: cotacao-config
+                  key: cache_ttl_seconds
